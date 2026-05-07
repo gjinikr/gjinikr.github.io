@@ -1,0 +1,27 @@
+title: "r3v::pwn"
+description: "Reverse Engineering & Exploitation Research"
+author: "YOUR_ALIAS"
+baseurl: ""
+url: "https://YOUR_USERNAME.github.io"
+
+markdown: kramdown
+kramdown:
+  syntax_highlighter: rouge
+  syntax_highlighter_opts:
+    block:
+      line_numbers: false
+
+highlighter: rouge
+permalink: /:year/:month/:day/:title/
+
+defaults:
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock

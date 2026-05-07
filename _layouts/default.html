@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% if page.title %}{{ page.title }} — {{ site.title }}{% else %}{{ site.title }}{% endif %}</title>
+<meta name="description" content="{{ page.excerpt | default: site.description | strip_html | truncatewords: 50 }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════════
+   r3v::pwn — TERMINAL RESEARCH BLOG
+   ══════════════════════════════════════════ */
+
+:root {
+  --bg: #06060a;
+  --bg-surface: #0c0c14;
+  --bg-card: #10101a;
+  --bg-code: #08080e;
+  --border: #1a1a28;
+  --border-hi: #252538;
+  --text: #ccccd8;
+  --text-dim: #70708a;
+  --text-ghost: #40405a;
+  --green: #00ff88;
+  --green-mid: #00cc6a;
+  --green-lo: rgba(0,255,136,0.08);
+  --red: #ff2244;
+  --red-lo: rgba(255,34,68,0.08);
+  --blue: #3388ff;
+  --blue-lo: rgba(51,136,255,0.08);
+  --amber: #ffaa00;
+  --amber-lo: rgba(255,170,0,0.08);
+  --purple: #7744ee;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.75;
+  font-size: 14px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Scanline effect ── */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg, transparent, transparent 2px,
+    rgba(0,255,136,0.008) 2px, rgba(0,255,136,0.008) 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+::selection { background: var(--green); color: var(--bg); }
+
+a { color: var(--green); text-decoration: none; transition: 0.15s; }
+a:hover { text-shadow: 0 0 12px rgba(0,255,136,0.4); }
+
+/* ── Header ── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(6,6,10,0.9);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.header-inner {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.2rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.5px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  color: var(--text);
+}
+
+.logo .prompt { color: var(--green); }
+.logo .slash { color: var(--text-ghost); }
+
+.cursor {
+  display: inline-block;
+  width: 7px;
+  height: 16px;
+  background: var(--green);
+  margin-left: 2px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink { 50% { opacity: 0; } }
+
+nav {
+  display: flex;
+  gap: 1.8rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+nav a { color: var(--text-dim); font-weight: 500; }
+nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255,136,0.3); }
+
+/* ── Main ── */
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ── Hero ── */
+.hero {
+  padding: 5rem 0 3.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 3rem;
+}
+
+.hero-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.hero-label::before {
+  content: '>';
+  font-size: 0.8rem;
+}
+
+.hero h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -1px;
+  margin-bottom: 1.2rem;
+}
+
+.hero h1 em {
+  font-style: normal;
+  color: var(--green);
+  text-shadow: 0 0 30px rgba(0,255,136,0.15);
+}
+
+.hero-sub {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  max-width: 520px;
+  line-height: 1.8;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 2.5rem;
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.meta-block .val {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--green);
+  display: block;
+}
+
+.meta-block .lbl {
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--text-ghost);
+  margin-top: 0.15rem;
+}
+
+/* ── Section dividers ── */
+.section-title {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-ghost);
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-title::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Post cards ── */
+.post-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 2rem 2.2rem;
+  margin-bottom: 1.2rem;
+  transition: 0.25s;
+  position: relative;
+  display: block;
+  color: var(--text);
+}
+
+.post-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+  background: var(--green);
+  opacity: 0;
+  transition: 0.25s;
+}
+
+.post-card:hover {
+  border-color: var(--border-hi);
+  transform: translateX(4px);
+  text-shadow: none;
+}
+
+.post-card:hover::before { opacity: 1; }
+
+.post-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text-ghost);
+}
+
+.tag {
+  padding: 0.15rem 0.55rem;
+  border: 1px solid;
+  border-radius: 2px;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+}
+
+.tag-re { color: var(--blue); border-color: rgba(51,136,255,0.25); background: var(--blue-lo); }
+.tag-pwn { color: var(--red); border-color: rgba(255,34,68,0.25); background: var(--red-lo); }
+.tag-malware { color: var(--purple); border-color: rgba(119,68,238,0.25); background: rgba(119,68,238,0.08); }
+.tag-cve { color: var(--amber); border-color: rgba(255,170,0,0.25); background: var(--amber-lo); }
+.tag-tool { color: var(--green); border-color: rgba(0,255,136,0.25); background: var(--green-lo); }
+
+.post-card h2 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.4;
+  margin-bottom: 0.6rem;
+  letter-spacing: -0.3px;
+}
+
+.post-card p {
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.read-indicator {
+  color: var(--green);
+  font-size: 0.65rem;
+  margin-top: 1rem;
+  opacity: 0;
+  transition: 0.25s;
+  letter-spacing: 1px;
+}
+
+.post-card:hover .read-indicator { opacity: 1; }
+
+/* ── Post page ── */
+.post-header {
+  padding: 4rem 0 2rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2.5rem;
+}
+
+.post-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+  margin-bottom: 1rem;
+}
+
+.post-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.65rem;
+  color: var(--text-ghost);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.post-content {
+  padding-bottom: 4rem;
+}
+
+.post-content h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 2.5rem 0 1rem;
+  color: var(--green);
+  letter-spacing: -0.3px;
+}
+
+.post-content h3 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 2rem 0 0.8rem;
+  color: var(--text);
+}
+
+.post-content p {
+  margin-bottom: 1.2rem;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.post-content ul, .post-content ol {
+  margin: 1rem 0 1.2rem 1.5rem;
+  font-size: 0.85rem;
+}
+
+.post-content li { margin-bottom: 0.4rem; }
+
+.post-content code {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  padding: 0.15rem 0.4rem;
+  border-radius: 2px;
+  font-size: 0.82rem;
+  color: var(--green);
+}
+
+.post-content pre {
+  background: var(--bg-code);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1.5rem;
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  position: relative;
+}
+
+.post-content pre::before {
+  content: '$ ';
+  color: var(--green);
+  user-select: none;
+}
+
+.post-content pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.post-content blockquote {
+  border-left: 2px solid var(--green);
+  padding: 0.8rem 1.2rem;
+  margin: 1.5rem 0;
+  background: var(--green-lo);
+  color: var(--text-dim);
+  font-size: 0.82rem;
+}
+
+.post-content img {
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  margin: 1.5rem 0;
+}
+
+/* ── Footer ── */
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 2.5rem 0;
+  margin-top: 4rem;
+  text-align: center;
+  font-size: 0.65rem;
+  color: var(--text-ghost);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}
+
+/* ── About page ── */
+.about-content {
+  padding: 4rem 0;
+}
+
+.about-content h1 {
+  font-size: 1.6rem;
+  margin-bottom: 2rem;
+}
+
+.about-content p {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  max-width: 580px;
+}
+
+/* ── Back link ── */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--text-ghost);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.back-link:hover { color: var(--green); }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  .header-inner { flex-direction: column; gap: 1rem; }
+  .hero h1 { font-size: 1.5rem; }
+  .hero-meta { gap: 1.5rem; flex-wrap: wrap; }
+  .post-card { padding: 1.5rem; }
+  nav { gap: 1.2rem; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="{{ '/' | relative_url }}" class="logo">
+      <span class="prompt">root@r3v</span><span class="slash">:</span>~<span class="slash">/</span>{{ site.title }}<span class="cursor"></span>
+    </a>
+    <nav>
+      <a href="{{ '/' | relative_url }}" class="{% if page.url == '/' %}active{% endif %}">Posts</a>
+      <a href="{{ '/about' | relative_url }}" class="{% if page.url == '/about/' %}active{% endif %}">About</a>
+      <a href="https://github.com/YOUR_USERNAME" target="_blank">Github</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  {{ content }}
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    {{ site.title }} — {{ site.description }} — {{ site.author }}
+  </div>
+</footer>
+
+</body>
+</html>

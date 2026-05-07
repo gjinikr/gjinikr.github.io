@@ -1,0 +1,41 @@
+---
+layout: default
+---
+
+<section class="hero">
+  <div class="hero-label">security research</div>
+  <h1>Breaking binaries.<br>Writing <em>exploits</em>.<br>Documenting everything.</h1>
+  <p class="hero-sub">RE & binary exploitation research. CTF competitor, vulnerability researcher, tool builder. Currently qualifying for the Kosovo national cyber team.</p>
+  <div class="hero-meta">
+    <div class="meta-block">
+      <span class="val">RE</span>
+      <span class="lbl">Reverse Engineering</span>
+    </div>
+    <div class="meta-block">
+      <span class="val">PWN</span>
+      <span class="lbl">Exploitation</span>
+    </div>
+    <div class="meta-block">
+      <span class="val">VR</span>
+      <span class="lbl">Vuln Research</span>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-title">Latest Research</div>
+
+  {% for post in site.posts %}
+  <a href="{{ post.url | relative_url }}" class="post-card">
+    <div class="post-card-meta">
+      {% for tag in post.tags %}
+      <span class="tag tag-{{ tag }}">{{ tag }}</span>
+      {% endfor %}
+      <span>{{ post.date | date: "%Y.%m.%d" }}</span>
+    </div>
+    <h2>{{ post.title }}</h2>
+    <p>{{ post.excerpt | strip_html | truncatewords: 35 }}</p>
+    <div class="read-indicator">> read analysis</div>
+  </a>
+  {% endfor %}
+</section>
