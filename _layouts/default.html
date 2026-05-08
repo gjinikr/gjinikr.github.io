@@ -40,7 +40,7 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  background: var(--bg);
+  background: var(--bg) url('/assets/eren.jpg') center center / cover no-repeat fixed;
   color: var(--text);
   line-height: 1.75;
   font-size: 14px;
@@ -487,7 +487,6 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
 (function () {
   const canvas = document.getElementById('eren-bg');
   const ctx    = canvas.getContext('2d');
-
   Object.assign(canvas.style, {
     position: 'fixed', top: 0, left: 0,
     width: '100%', height: '100%',
@@ -495,204 +494,167 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
   });
 
   let W, H;
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-  }
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
   resize();
   window.addEventListener('resize', resize);
 
-  /* ── Ash particles ── */
-  function mkParticle() {
+  /* ── Feather particles (red, matching the image) ── */
+  function mkFeather() {
+    const side = Math.random() < 0.5 ? -1 : 1;
     return {
-      x: Math.random() * (W || 800),
-      y: (H || 600) + Math.random() * 60,
-      r: Math.random() * 1.8 + 0.3,
-      vx: (Math.random() - 0.5) * 0.25,
-      vy: -(Math.random() * 0.6 + 0.15),
-      alpha: Math.random() * 0.22 + 0.04,
-      green: Math.random() < 0.12
+      x: W * 0.5 + side * (Math.random() * W * 0.55),
+      y: Math.random() * H,
+      r: Math.random() * 3.5 + 1.2,
+      vx: side * (Math.random() * 0.6 + 0.15),
+      vy: -(Math.random() * 0.5 + 0.1),
+      rot: Math.random() * Math.PI * 2,
+      rotV: (Math.random() - 0.5) * 0.04,
+      alpha: Math.random() * 0.55 + 0.15,
+      red: Math.random() < 0.75
     };
   }
-  const particles = Array.from({ length: 90 }, mkParticle);
+  const feathers = Array.from({ length: 55 }, mkFeather);
 
-  /* ── ODM gear trail sparks ── */
-  const sparks = Array.from({ length: 12 }, () => ({
-    x: Math.random() * (W || 800),
-    y: Math.random() * (H || 600),
-    len: Math.random() * 80 + 40,
-    angle: Math.random() * Math.PI * 2,
-    speed: Math.random() * 1.5 + 0.8,
-    alpha: 0,
-    life: Math.random()
-  }));
+  /* ── ODM wire sparks ── */
+  function mkSpark() {
+    return {
+      x: Math.random() * (W || 800),
+      y: H * 0.15 + Math.random() * H * 0.6,
+      len: Math.random() * 110 + 50,
+      angle: -Math.PI * 0.22 + (Math.random() - 0.5) * 1.1,
+      speed: Math.random() * 1.4 + 0.7,
+      life: Math.random()
+    };
+  }
+  const sparks = Array.from({ length: 10 }, mkSpark);
 
   let t = 0;
 
-  /* ── Draw ── */
-  function bg() {
-    ctx.fillStyle = '#06060a';
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  function walls() {
-    ctx.save();
-    ctx.globalAlpha = 0.18;
-    ctx.strokeStyle = '#1a1a28';
-    ctx.lineWidth = 1;
-    const base = H * 0.68;
-    for (let y = base; y < H + 2; y += 28) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
-    for (let x = 0; x < W + 2; x += 36) {
-      ctx.beginPath(); ctx.moveTo(x, base); ctx.lineTo(x, H); ctx.stroke();
-    }
-    ctx.restore();
-  }
-
-  function titanSilhouette() {
-    const cx = W * 0.5, headY = H * 0.26;
-    ctx.save();
-
-    /* body glow — very subtle */
-    const bodyGrd = ctx.createRadialGradient(cx, H * 0.42, 0, cx, H * 0.42, H * 0.32);
-    bodyGrd.addColorStop(0, 'rgba(10,10,20,0.55)');
-    bodyGrd.addColorStop(1, 'rgba(6,6,10,0)');
-    ctx.fillStyle = bodyGrd;
+  function overlay() {
+    /* vignette — keep center clear so Eren is visible */
+    const g = ctx.createRadialGradient(W*0.5, H*0.42, H*0.1, W*0.5, H*0.42, H*0.85);
+    g.addColorStop(0,   'rgba(4,4,8,0.10)');
+    g.addColorStop(0.55,'rgba(4,4,8,0.30)');
+    g.addColorStop(1,   'rgba(4,4,8,0.82)');
+    ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
 
-    /* head silhouette */
-    ctx.globalAlpha = 0.09;
-    ctx.fillStyle = '#111122';
-    ctx.beginPath();
-    ctx.ellipse(cx, headY, W * 0.065, H * 0.095, 0, 0, Math.PI * 2);
-    ctx.fill();
+    /* top & bottom bars */
+    const top = ctx.createLinearGradient(0,0,0,H*0.22);
+    top.addColorStop(0,'rgba(4,4,8,0.75)'); top.addColorStop(1,'rgba(4,4,8,0)');
+    ctx.fillStyle = top; ctx.fillRect(0,0,W,H*0.22);
 
-    /* torso */
-    ctx.beginPath();
-    ctx.moveTo(cx - W * 0.055, headY + H * 0.09);
-    ctx.lineTo(cx + W * 0.055, headY + H * 0.09);
-    ctx.lineTo(cx + W * 0.11, H * 0.7);
-    ctx.lineTo(cx - W * 0.11, H * 0.7);
-    ctx.closePath();
-    ctx.fill();
-
-    ctx.restore();
+    const bot = ctx.createLinearGradient(0,H*0.78,0,H);
+    bot.addColorStop(0,'rgba(4,4,8,0)'); bot.addColorStop(1,'rgba(4,4,8,0.85)');
+    ctx.fillStyle = bot; ctx.fillRect(0,H*0.78,W,H*0.22);
   }
 
   function erenEyes() {
-    const cx  = W * 0.5;
-    const ey  = H * 0.255;
-    const sep = W * 0.038;
-    const pulse = (Math.sin(t * 0.018) + 1) / 2;
+    /* Eren is dead-center, eyes ~48% across, ~33% down */
+    const cy  = H * 0.33;
+    const sep = W * 0.022;
+    const pulse = (Math.sin(t * 0.02) + 1) / 2;
 
     [-1, 1].forEach(side => {
-      const ex = cx + side * sep;
+      const ex = W * 0.5 + side * sep;
+      const ey = cy;
 
-      /* outer glow */
-      const g = ctx.createRadialGradient(ex, ey, 0, ex, ey, 55 + pulse * 18);
-      g.addColorStop(0,   `rgba(0,255,136,${0.55 + pulse * 0.25})`);
-      g.addColorStop(0.25,`rgba(0,255,136,${0.18 + pulse * 0.10})`);
+      /* glow — green on hacker theme */
+      const g = ctx.createRadialGradient(ex, ey, 0, ex, ey, 48 + pulse * 16);
+      g.addColorStop(0,   `rgba(0,255,136,${0.6 + pulse * 0.25})`);
+      g.addColorStop(0.3, `rgba(0,255,136,${0.18 + pulse * 0.10})`);
       g.addColorStop(1,   'rgba(0,255,136,0)');
       ctx.save();
       ctx.fillStyle = g;
       ctx.beginPath();
-      ctx.arc(ex, ey, 70, 0, Math.PI * 2);
+      ctx.arc(ex, ey, 65, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
       /* iris */
       ctx.save();
-      ctx.globalAlpha = 0.88 + pulse * 0.12;
-      ctx.fillStyle = '#00ff88';
+      ctx.globalAlpha = 0.85 + pulse * 0.15;
+      ctx.fillStyle   = '#00ff88';
       ctx.shadowColor = '#00ff88';
-      ctx.shadowBlur  = 18 + pulse * 10;
+      ctx.shadowBlur  = 20 + pulse * 12;
       ctx.beginPath();
-      ctx.ellipse(ex, ey, 11, 6.5, 0, 0, Math.PI * 2);
+      ctx.ellipse(ex, ey, 10, 6, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
 
-      /* pupil slit */
+      /* pupil */
       ctx.save();
-      ctx.globalAlpha = 0.9;
-      ctx.fillStyle = '#001a0a';
+      ctx.globalAlpha = 0.92;
+      ctx.fillStyle   = '#000d05';
       ctx.beginPath();
-      ctx.ellipse(ex, ey, 3, 6, 0, 0, Math.PI * 2);
+      ctx.ellipse(ex, ey, 2.8, 5.5, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     });
   }
 
-  function atmosphere() {
-    const g = ctx.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0,   'rgba(6,6,10,0.45)');
-    g.addColorStop(0.38,'rgba(6,6,10,0.05)');
-    g.addColorStop(0.65,'rgba(6,6,10,0.10)');
-    g.addColorStop(1,   'rgba(6,6,10,0.70)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  function ashParticles() {
-    particles.forEach(p => {
+  function drawFeathers() {
+    feathers.forEach(p => {
       ctx.save();
       ctx.globalAlpha = p.alpha;
-      ctx.fillStyle   = p.green ? '#00ff88' : '#8888aa';
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      /* feather shape — elongated oval */
+      ctx.fillStyle = p.red ? '#cc2233' : '#00ff88';
+      ctx.shadowColor = p.red ? '#ff2244' : '#00ff88';
+      ctx.shadowBlur  = 6;
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.ellipse(0, 0, p.r * 0.55, p.r * 2.2, 0, 0, Math.PI * 2);
       ctx.fill();
+      /* stem */
+      ctx.strokeStyle = p.red ? '#881122' : '#00cc66';
+      ctx.lineWidth = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(0, -p.r * 2.2); ctx.lineTo(0, p.r * 2.2);
+      ctx.stroke();
       ctx.restore();
 
-      p.x += p.vx + Math.sin(t * 0.008 + p.r) * 0.12;
-      p.y += p.vy;
+      p.x   += p.vx + Math.sin(t * 0.009 + p.r) * 0.18;
+      p.y   += p.vy;
+      p.rot += p.rotV;
 
-      if (p.y < -6) { Object.assign(p, mkParticle()); p.y = H + 4; }
+      if (p.y < -20 || p.x < -30 || p.x > W + 30) {
+        Object.assign(p, mkFeather());
+        p.y = H + 20;
+      }
     });
   }
 
-  function odmTrails() {
+  function drawODMwires() {
     sparks.forEach(s => {
-      s.life += 0.008;
-      if (s.life > 1) {
-        s.x     = Math.random() * W;
-        s.y     = H * 0.2 + Math.random() * H * 0.55;
-        s.angle = -Math.PI * 0.25 + (Math.random() - 0.5) * 0.8;
-        s.len   = Math.random() * 90 + 30;
-        s.speed = Math.random() * 1.2 + 0.6;
-        s.life  = 0;
-        s.alpha = 0;
-      }
+      s.life += 0.007;
+      if (s.life > 1) { Object.assign(s, mkSpark()); s.life = 0; }
       const fade = s.life < 0.15 ? s.life / 0.15
-                 : s.life > 0.75 ? 1 - (s.life - 0.75) / 0.25 : 1;
+                 : s.life > 0.78 ? (1 - s.life) / 0.22 : 1;
       ctx.save();
-      ctx.globalAlpha = fade * 0.28;
+      ctx.globalAlpha = fade * 0.32;
       ctx.strokeStyle = '#00ff88';
-      ctx.lineWidth   = 0.7;
+      ctx.lineWidth   = 0.8;
       ctx.shadowColor = '#00ff88';
-      ctx.shadowBlur  = 4;
+      ctx.shadowBlur  = 5;
       ctx.beginPath();
       ctx.moveTo(s.x, s.y);
       ctx.lineTo(s.x + Math.cos(s.angle) * s.len, s.y + Math.sin(s.angle) * s.len);
       ctx.stroke();
       ctx.restore();
-
       s.x += Math.cos(s.angle) * s.speed;
       s.y += Math.sin(s.angle) * s.speed;
     });
   }
 
   function frame() {
-    bg();
-    walls();
-    titanSilhouette();
-    atmosphere();
+    overlay();
     erenEyes();
-    odmTrails();
-    ashParticles();
+    drawFeathers();
+    drawODMwires();
     t++;
     requestAnimationFrame(frame);
   }
-
   frame();
 })();
 </script>
