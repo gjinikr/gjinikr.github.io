@@ -23,5 +23,6 @@ permalink: /about/
 
   <h2 style="color: var(--green); margin-top: 2.5rem; font-size: 0.9rem;">Contact</h2>
 
-  <p>GitHub: <a href="https://github.com/gjinikr">gjinikr</a></p>
+  <p>GitHub: <a href="https://github.com/gjinikr">gjinikr</a><br>
+  LinkedIn: <a href="https://www.linkedin.com/in/gjin-krasniqi-b46091206/" target="_blank">Gjin Krasniqi</a></p>
 </section>
