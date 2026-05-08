@@ -1,8 +1,8 @@
 title: "r3v::pwn"
 description: "Reverse Engineering & Exploitation Research"
-author: "YOUR_ALIAS"
+author: "g22_1"
 baseurl: ""
-url: "https://YOUR_USERNAME.github.io"
+url: "https://gjinikr.github.io"
 
 markdown: kramdown
 kramdown:
