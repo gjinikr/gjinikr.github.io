@@ -484,6 +484,14 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
 <canvas id="eren-bg"></canvas>
 
 <script>
+/*
+ * Light aesthetic Eren Yeager background:
+ *   - Wings of Freedom emblem watermark (slow pulse)
+ *   - Soft white falling feathers (Survey Corps motif)
+ *   - Drifting dust motes with gentle glow
+ *   - Slow horizontal steam wisps (Titan steam)
+ *   - Light vignette to keep content readable
+ */
 (function () {
   const canvas = document.getElementById('eren-bg');
   const ctx    = canvas.getContext('2d');
@@ -498,98 +506,163 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
   resize();
   window.addEventListener('resize', resize);
 
-  /* ── Feather particles (red, matching the image) ── */
+  /* ── Soft falling feathers (white / pale cream) ── */
   function mkFeather() {
-    const side = Math.random() < 0.5 ? -1 : 1;
     return {
-      x: W * 0.5 + side * (Math.random() * W * 0.55),
-      y: Math.random() * H,
-      r: Math.random() * 3.5 + 1.2,
-      vx: side * (Math.random() * 0.6 + 0.15),
-      vy: -(Math.random() * 0.5 + 0.1),
+      x: Math.random() * W,
+      y: Math.random() * H - H,
+      r: Math.random() * 4 + 1.5,
+      vx: (Math.random() - 0.5) * 0.4,
+      vy: Math.random() * 0.35 + 0.12,
       rot: Math.random() * Math.PI * 2,
-      rotV: (Math.random() - 0.5) * 0.04,
-      alpha: Math.random() * 0.55 + 0.15,
-      red: Math.random() < 0.75
+      rotV: (Math.random() - 0.5) * 0.012,
+      alpha: Math.random() * 0.35 + 0.18,
+      sway: Math.random() * Math.PI * 2,
+      hue: Math.random() < 0.85 ? 'white' : 'cream'
     };
   }
-  const feathers = Array.from({ length: 55 }, mkFeather);
+  const feathers = Array.from({ length: 38 }, mkFeather);
 
-  /* ── ODM wire sparks ── */
-  function mkSpark() {
+  /* ── Floating dust motes ── */
+  function mkMote() {
     return {
-      x: Math.random() * (W || 800),
-      y: H * 0.15 + Math.random() * H * 0.6,
-      len: Math.random() * 110 + 50,
-      angle: -Math.PI * 0.22 + (Math.random() - 0.5) * 1.1,
-      speed: Math.random() * 1.4 + 0.7,
-      life: Math.random()
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 1.2 + 0.4,
+      vx: (Math.random() - 0.5) * 0.15,
+      vy: -(Math.random() * 0.25 + 0.05),
+      alpha: Math.random() * 0.5 + 0.2,
+      phase: Math.random() * Math.PI * 2
     };
   }
-  const sparks = Array.from({ length: 10 }, mkSpark);
+  const motes = Array.from({ length: 60 }, mkMote);
+
+  /* ── Horizontal steam wisps ── */
+  function mkWisp() {
+    return {
+      x: -200,
+      y: H * (0.15 + Math.random() * 0.7),
+      len: Math.random() * 260 + 180,
+      h: Math.random() * 35 + 20,
+      vx: Math.random() * 0.35 + 0.15,
+      alpha: Math.random() * 0.06 + 0.03,
+      phase: Math.random() * Math.PI * 2
+    };
+  }
+  const wisps = Array.from({ length: 4 }, () => {
+    const w = mkWisp();
+    w.x = Math.random() * W;
+    return w;
+  });
 
   let t = 0;
 
+  /* ── Light vignette (much softer than before) ── */
   function overlay() {
-    /* vignette — keep center clear so Eren is visible */
-    const g = ctx.createRadialGradient(W*0.5, H*0.42, H*0.1, W*0.5, H*0.42, H*0.85);
-    g.addColorStop(0,   'rgba(4,4,8,0.10)');
-    g.addColorStop(0.55,'rgba(4,4,8,0.30)');
-    g.addColorStop(1,   'rgba(4,4,8,0.82)');
+    const g = ctx.createRadialGradient(W*0.5, H*0.45, H*0.15, W*0.5, H*0.5, H*0.95);
+    g.addColorStop(0,   'rgba(6,6,12,0.05)');
+    g.addColorStop(0.6, 'rgba(6,6,12,0.22)');
+    g.addColorStop(1,   'rgba(6,6,12,0.55)');
     ctx.fillStyle = g;
     ctx.fillRect(0, 0, W, H);
 
-    /* top & bottom bars */
-    const top = ctx.createLinearGradient(0,0,0,H*0.22);
-    top.addColorStop(0,'rgba(4,4,8,0.75)'); top.addColorStop(1,'rgba(4,4,8,0)');
-    ctx.fillStyle = top; ctx.fillRect(0,0,W,H*0.22);
+    const top = ctx.createLinearGradient(0,0,0,H*0.18);
+    top.addColorStop(0,'rgba(6,6,12,0.55)'); top.addColorStop(1,'rgba(6,6,12,0)');
+    ctx.fillStyle = top; ctx.fillRect(0,0,W,H*0.18);
 
-    const bot = ctx.createLinearGradient(0,H*0.78,0,H);
-    bot.addColorStop(0,'rgba(4,4,8,0)'); bot.addColorStop(1,'rgba(4,4,8,0.85)');
-    ctx.fillStyle = bot; ctx.fillRect(0,H*0.78,W,H*0.22);
+    const bot = ctx.createLinearGradient(0,H*0.82,0,H);
+    bot.addColorStop(0,'rgba(6,6,12,0)'); bot.addColorStop(1,'rgba(6,6,12,0.65)');
+    ctx.fillStyle = bot; ctx.fillRect(0,H*0.82,W,H*0.18);
   }
 
-  function erenEyes() {
-    /* Eren is dead-center, eyes ~48% across, ~33% down */
-    const cy  = H * 0.33;
-    const sep = W * 0.022;
-    const pulse = (Math.sin(t * 0.02) + 1) / 2;
-
-    [-1, 1].forEach(side => {
-      const ex = W * 0.5 + side * sep;
-      const ey = cy;
-
-      /* glow — green on hacker theme */
-      const g = ctx.createRadialGradient(ex, ey, 0, ex, ey, 48 + pulse * 16);
-      g.addColorStop(0,   `rgba(0,255,136,${0.6 + pulse * 0.25})`);
-      g.addColorStop(0.3, `rgba(0,255,136,${0.18 + pulse * 0.10})`);
-      g.addColorStop(1,   'rgba(0,255,136,0)');
-      ctx.save();
-      ctx.fillStyle = g;
+  /* ── Wings of Freedom emblem (two crossed wings, watermark) ── */
+  function wing(cx, cy, scale, dir, alpha, tint) {
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(dir * scale, scale);
+    ctx.globalAlpha = alpha;
+    ctx.strokeStyle = tint;
+    ctx.lineWidth = 1.1;
+    ctx.shadowColor = tint;
+    ctx.shadowBlur = 8;
+    /* primary feathers — fan of strokes */
+    for (let i = 0; i < 7; i++) {
+      const a = -0.55 + i * 0.13;
+      const len = 110 - Math.abs(i - 3) * 8;
       ctx.beginPath();
-      ctx.arc(ex, ey, 65, 0, Math.PI * 2);
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(
+        Math.cos(a) * len * 0.55, Math.sin(a) * len * 0.55 - 6,
+        Math.cos(a) * len,        Math.sin(a) * len
+      );
+      ctx.stroke();
+    }
+    /* secondary inner feathers */
+    ctx.lineWidth = 0.7;
+    for (let i = 0; i < 5; i++) {
+      const a = -0.2 + i * 0.16;
+      const len = 55 + i * 4;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.quadraticCurveTo(
+        Math.cos(a) * len * 0.5, Math.sin(a) * len * 0.5 + 4,
+        Math.cos(a) * len,       Math.sin(a) * len
+      );
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function wingsOfFreedom() {
+    const pulse = (Math.sin(t * 0.006) + 1) / 2;       // 0..1
+    const baseAlpha = 0.05 + pulse * 0.04;
+    const scale = Math.min(W, H) / 900 * 1.4;
+    const cx = W * 0.5;
+    const cy = H * 0.5;
+    /* back wing — pale cream, slightly bigger */
+    wing(cx, cy, scale * 1.08, -1, baseAlpha * 0.9, 'rgba(255,235,210,1)');
+    /* front wing — soft white */
+    wing(cx, cy, scale,         1, baseAlpha,       'rgba(245,250,255,1)');
+  }
+
+  function drawWisps() {
+    wisps.forEach(w => {
+      const grad = ctx.createLinearGradient(w.x, w.y, w.x + w.len, w.y);
+      grad.addColorStop(0,   'rgba(220,225,235,0)');
+      grad.addColorStop(0.5, `rgba(220,225,235,${w.alpha})`);
+      grad.addColorStop(1,   'rgba(220,225,235,0)');
+      ctx.save();
+      ctx.fillStyle = grad;
+      ctx.filter = 'blur(6px)';
+      ctx.beginPath();
+      ctx.ellipse(w.x + w.len/2,
+                  w.y + Math.sin(t * 0.003 + w.phase) * 6,
+                  w.len/2, w.h, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
+      w.x += w.vx;
+      if (w.x > W + 100) Object.assign(w, mkWisp());
+    });
+  }
 
-      /* iris */
+  function drawMotes() {
+    motes.forEach(m => {
+      const tw = 0.6 + 0.4 * Math.sin(t * 0.04 + m.phase);
       ctx.save();
-      ctx.globalAlpha = 0.85 + pulse * 0.15;
-      ctx.fillStyle   = '#00ff88';
-      ctx.shadowColor = '#00ff88';
-      ctx.shadowBlur  = 20 + pulse * 12;
+      ctx.globalAlpha = m.alpha * tw;
+      ctx.fillStyle = '#ffffff';
+      ctx.shadowColor = '#ffffff';
+      ctx.shadowBlur = 4;
       ctx.beginPath();
-      ctx.ellipse(ex, ey, 10, 6, 0, 0, Math.PI * 2);
+      ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
-
-      /* pupil */
-      ctx.save();
-      ctx.globalAlpha = 0.92;
-      ctx.fillStyle   = '#000d05';
-      ctx.beginPath();
-      ctx.ellipse(ex, ey, 2.8, 5.5, 0, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.restore();
+      m.x += m.vx + Math.sin(t * 0.005 + m.phase) * 0.08;
+      m.y += m.vy;
+      if (m.y < -10 || m.x < -10 || m.x > W + 10) {
+        Object.assign(m, mkMote());
+        m.y = H + 10;
+      }
     });
   }
 
@@ -599,59 +672,46 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
       ctx.globalAlpha = p.alpha;
       ctx.translate(p.x, p.y);
       ctx.rotate(p.rot);
-      /* feather shape — elongated oval */
-      ctx.fillStyle = p.red ? '#cc2233' : '#00ff88';
-      ctx.shadowColor = p.red ? '#ff2244' : '#00ff88';
-      ctx.shadowBlur  = 6;
+
+      const color  = p.hue === 'cream' ? '#f5ead4' : '#f8fbff';
+      const shadow = p.hue === 'cream' ? '#fff5d8' : '#ffffff';
+
+      ctx.fillStyle   = color;
+      ctx.shadowColor = shadow;
+      ctx.shadowBlur  = 4;
+
+      /* soft elongated feather */
       ctx.beginPath();
-      ctx.ellipse(0, 0, p.r * 0.55, p.r * 2.2, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 0, p.r * 0.5, p.r * 2.2, 0, 0, Math.PI * 2);
       ctx.fill();
+
       /* stem */
-      ctx.strokeStyle = p.red ? '#881122' : '#00cc66';
-      ctx.lineWidth = 0.5;
+      ctx.strokeStyle = 'rgba(180,180,190,0.5)';
+      ctx.lineWidth = 0.4;
+      ctx.shadowBlur = 0;
       ctx.beginPath();
-      ctx.moveTo(0, -p.r * 2.2); ctx.lineTo(0, p.r * 2.2);
+      ctx.moveTo(0, -p.r * 2.1); ctx.lineTo(0, p.r * 2.1);
       ctx.stroke();
       ctx.restore();
 
-      p.x   += p.vx + Math.sin(t * 0.009 + p.r) * 0.18;
+      p.x   += p.vx + Math.sin(t * 0.008 + p.sway) * 0.25;
       p.y   += p.vy;
       p.rot += p.rotV;
 
-      if (p.y < -20 || p.x < -30 || p.x > W + 30) {
+      if (p.y > H + 20 || p.x < -30 || p.x > W + 30) {
         Object.assign(p, mkFeather());
-        p.y = H + 20;
+        p.y = -20;
       }
     });
   }
 
-  function drawODMwires() {
-    sparks.forEach(s => {
-      s.life += 0.007;
-      if (s.life > 1) { Object.assign(s, mkSpark()); s.life = 0; }
-      const fade = s.life < 0.15 ? s.life / 0.15
-                 : s.life > 0.78 ? (1 - s.life) / 0.22 : 1;
-      ctx.save();
-      ctx.globalAlpha = fade * 0.32;
-      ctx.strokeStyle = '#00ff88';
-      ctx.lineWidth   = 0.8;
-      ctx.shadowColor = '#00ff88';
-      ctx.shadowBlur  = 5;
-      ctx.beginPath();
-      ctx.moveTo(s.x, s.y);
-      ctx.lineTo(s.x + Math.cos(s.angle) * s.len, s.y + Math.sin(s.angle) * s.len);
-      ctx.stroke();
-      ctx.restore();
-      s.x += Math.cos(s.angle) * s.speed;
-      s.y += Math.sin(s.angle) * s.speed;
-    });
-  }
-
   function frame() {
+    ctx.clearRect(0, 0, W, H);
     overlay();
-    erenEyes();
+    wingsOfFreedom();
+    drawWisps();
+    drawMotes();
     drawFeathers();
-    drawODMwires();
     t++;
     requestAnimationFrame(frame);
   }
