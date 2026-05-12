@@ -7,6 +7,7 @@
 <meta name="description" content="{{ page.excerpt | default: site.description | strip_html | truncatewords: 50 }}">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='4' fill='%2306060a'/%3E%3Cpath d='M16 4L28 16L16 28L4 16Z' stroke='%2300ff88' stroke-width='1.8' fill='none'/%3E%3Cpath d='M11 11L15 16L11 21' stroke='%2300ff88' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3Cline x1='17' y1='20.5' x2='22' y2='20.5' stroke='%2300ff88' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
 /* ══════════════════════════════════════════
    r3v::pwn — TERMINAL RESEARCH BLOG
@@ -90,12 +91,31 @@ a:hover { text-shadow: 0 0 12px rgba(0,255,136,0.4); }
   letter-spacing: -0.5px;
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 0.6rem;
   color: var(--text);
 }
 
 .logo .prompt { color: var(--green); }
 .logo .slash { color: var(--text-ghost); }
+
+.logo-mark {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: block;
+  filter: drop-shadow(0 0 6px rgba(0, 255, 136, 0.25));
+  transition: 0.25s;
+}
+
+.logo:hover .logo-mark {
+  filter: drop-shadow(0 0 12px rgba(0, 255, 136, 0.5));
+  transform: rotate(45deg);
+}
+
+.logo-text {
+  display: flex;
+  align-items: center;
+}
 
 .cursor {
   display: inline-block;
@@ -706,8 +726,13 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
 
 <header class="site-header">
   <div class="header-inner">
-    <a href="{{ '/' | relative_url }}" class="logo">
-      <span class="prompt">root@r3v</span><span class="slash">:</span>~<span class="slash">/</span>{{ site.title }}<span class="cursor"></span>
+    <a href="{{ '/' | relative_url }}" class="logo" aria-label="{{ site.title }} home">
+      <svg class="logo-mark" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M16 2L30 16L16 30L2 16Z" stroke="currentColor" stroke-width="1.6" fill="none" opacity="0.55"/>
+        <path d="M11 10L16 16L11 22" stroke="#00ff88" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <line x1="17" y1="21" x2="22" y2="21" stroke="#00ff88" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <span class="logo-text"><span class="prompt">root@r3v</span><span class="slash">:</span>~<span class="slash">/</span>{{ site.title }}<span class="cursor"></span></span>
     </a>
     <nav>
       <a href="{{ '/' | relative_url }}" class="{% if page.url == '/' %}active{% endif %}">Posts</a>
