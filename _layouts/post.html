@@ -9,6 +9,10 @@ layout: default
       <span class="tag tag-{{ tag }}">{{ tag }}</span>
       {% endfor %}
       <span>{{ page.date | date: "%Y.%m.%d" }}</span>
+      <span class="meta-divider">·</span>
+      {% assign words = content | number_of_words %}
+      {% assign read_min = words | divided_by: 220 | plus: 1 %}
+      <span class="read-time">{{ read_min }} min read</span>
     </div>
     <h1>{{ page.title }}</h1>
   </div>
@@ -16,6 +20,28 @@ layout: default
   <div class="post-content">
     {{ content }}
   </div>
+
+  {% if page.previous.url or page.next.url %}
+  <nav class="post-nav">
+    {% if page.previous.url %}
+    <a href="{{ page.previous.url | relative_url }}" class="prev">
+      <span class="dir">previous</span>
+      <span class="ttl">{{ page.previous.title }}</span>
+    </a>
+    {% else %}
+    <span class="placeholder"></span>
+    {% endif %}
+
+    {% if page.next.url %}
+    <a href="{{ page.next.url | relative_url }}" class="next">
+      <span class="dir">next</span>
+      <span class="ttl">{{ page.next.title }}</span>
+    </a>
+    {% else %}
+    <span class="placeholder"></span>
+    {% endif %}
+  </nav>
+  {% endif %}
 
   <a href="{{ '/' | relative_url }}" class="back-link">← back to all posts</a>
 </article>

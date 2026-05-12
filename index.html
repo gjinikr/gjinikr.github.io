@@ -5,25 +5,40 @@ layout: default
 <section class="hero">
   <div class="hero-label">security research</div>
   <h1>Breaking binaries.<br>Writing <em>exploits</em>.<br>Documenting everything.</h1>
-  <p class="hero-sub">RE & binary exploitation research. CTF competitor, vulnerability researcher, tool builder.</p>
+  <p class="hero-sub">RE &amp; binary exploitation research. CTF competitor, vulnerability researcher, tool builder.</p>
+
+  {% assign all_tags = '' | split: '' %}
+  {% for post in site.posts %}{% for t in post.tags %}{% assign all_tags = all_tags | push: t %}{% endfor %}{% endfor %}
+  {% assign unique_tags = all_tags | uniq %}
+
   <div class="hero-meta">
     <div class="meta-block">
-      <span class="val">RE</span>
-      <span class="lbl">Reverse Engineering</span>
+      <span class="val">{{ site.posts | size }}</span>
+      <span class="lbl">Writeups</span>
     </div>
     <div class="meta-block">
-      <span class="val">PWN</span>
-      <span class="lbl">Exploitation</span>
+      <span class="val">{{ unique_tags | size }}</span>
+      <span class="lbl">Topics</span>
     </div>
     <div class="meta-block">
-      <span class="val">VR</span>
-      <span class="lbl">Vuln Research</span>
+      <span class="val">{{ site.posts.last.date | date: "%Y" }}</span>
+      <span class="lbl">Online Since</span>
     </div>
+  </div>
+
+  <div class="system-line">
+    <span class="status-dot"></span>
+    <span>status: online</span>
+    <span class="sep">//</span>
+    <span>last update: {{ site.posts.first.date | date: "%Y.%m.%d" }}</span>
   </div>
 </section>
 
 <section>
-  <div class="section-title">Latest Research</div>
+  <div class="section-title">
+    <span class="idx">01</span> Latest Research
+    <span class="count">{{ site.posts | size }} entries</span>
+  </div>
 
   {% for post in site.posts %}
   <a href="{{ post.url | relative_url }}" class="post-card">
@@ -32,10 +47,14 @@ layout: default
       <span class="tag tag-{{ tag }}">{{ tag }}</span>
       {% endfor %}
       <span>{{ post.date | date: "%Y.%m.%d" }}</span>
+      <span class="meta-divider">·</span>
+      {% assign words = post.content | number_of_words %}
+      {% assign read_min = words | divided_by: 220 | plus: 1 %}
+      <span class="read-time">{{ read_min }} min read</span>
     </div>
     <h2>{{ post.title }}</h2>
     <p>{{ post.excerpt | strip_html | truncatewords: 35 }}</p>
-    <div class="read-indicator">> read analysis</div>
+    <div class="read-indicator">&gt; read analysis</div>
   </a>
   {% endfor %}
 </section>

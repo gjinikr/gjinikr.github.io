@@ -1,4 +1,4 @@
-c<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -183,6 +183,7 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
   font-weight: 700;
   color: var(--green);
   display: block;
+  font-variant-numeric: tabular-nums;
 }
 
 .meta-block .lbl {
@@ -192,6 +193,34 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
   color: var(--text-ghost);
   margin-top: 0.15rem;
 }
+
+/* ── System status line (terminal-style) ── */
+.system-line {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 1.8rem;
+  font-size: 0.62rem;
+  color: var(--text-ghost);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.system-line .status-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--green);
+  border-radius: 50%;
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.system-line .sep { color: var(--text-ghost); opacity: 0.35; }
 
 /* ── Section dividers ── */
 .section-title {
@@ -205,11 +234,22 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
   gap: 1rem;
 }
 
+.section-title .idx {
+  color: var(--green);
+  font-weight: 600;
+}
+
 .section-title::after {
   content: '';
   flex: 1;
   height: 1px;
   background: var(--border);
+}
+
+.section-title .count {
+  color: var(--text-dim);
+  font-weight: 500;
+  letter-spacing: 1.5px;
 }
 
 /* ── Post cards ── */
@@ -246,12 +286,27 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
 .post-card-meta {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 0.8rem;
   margin-bottom: 0.8rem;
   font-size: 0.65rem;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   color: var(--text-ghost);
+}
+
+.post-card-meta .meta-divider {
+  color: var(--text-ghost);
+  opacity: 0.4;
+}
+
+.post-card-meta .read-time {
+  color: var(--text-dim);
+}
+
+.post-card-meta .read-time::before {
+  content: '⏱ ';
+  opacity: 0.7;
 }
 
 .tag {
@@ -312,12 +367,72 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
 .post-header-meta {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.8rem;
   font-size: 0.65rem;
   color: var(--text-ghost);
   text-transform: uppercase;
   letter-spacing: 1.5px;
 }
+
+.post-header-meta .meta-divider {
+  opacity: 0.4;
+}
+
+.post-header-meta .read-time {
+  color: var(--text-dim);
+}
+
+.post-header-meta .read-time::before {
+  content: '⏱ ';
+  opacity: 0.7;
+}
+
+/* Post navigation (prev/next) */
+.post-nav {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.post-nav a {
+  display: block;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--bg-card);
+  color: var(--text);
+  transition: 0.2s;
+}
+
+.post-nav a:hover {
+  border-color: var(--border-hi);
+  text-shadow: none;
+  transform: translateY(-1px);
+}
+
+.post-nav .dir {
+  display: block;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-ghost);
+  margin-bottom: 0.4rem;
+}
+
+.post-nav .ttl {
+  font-size: 0.8rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+
+.post-nav .next { text-align: right; }
+.post-nav .next .dir::after { content: ' →'; color: var(--green); }
+.post-nav .prev .dir::before { content: '← '; color: var(--green); }
+.post-nav .placeholder { visibility: hidden; }
 
 .post-content {
   padding-bottom: 4rem;
@@ -403,14 +518,63 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
 /* ── Footer ── */
 .site-footer {
   border-top: 1px solid var(--border);
-  padding: 2.5rem 0;
+  padding: 2.5rem 0 2rem;
   margin-top: 4rem;
-  text-align: center;
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   color: var(--text-ghost);
   letter-spacing: 1.5px;
   text-transform: uppercase;
 }
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-col h4 {
+  color: var(--text-dim);
+  font-size: 0.6rem;
+  letter-spacing: 2.5px;
+  margin-bottom: 0.7rem;
+}
+
+.footer-col a {
+  display: block;
+  color: var(--text-ghost);
+  padding: 0.15rem 0;
+  font-size: 0.62rem;
+}
+
+.footer-col a:hover { color: var(--green); }
+
+.footer-col .build-line {
+  color: var(--text-ghost);
+  font-size: 0.6rem;
+  margin-bottom: 0.3rem;
+}
+
+.footer-col .build-line .val {
+  color: var(--text-dim);
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding-top: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.58rem;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.footer-bottom .sig {
+  color: var(--text-ghost);
+}
+
+.footer-bottom .sig .prompt { color: var(--green); }
 
 /* ── About page ── */
 .about-content {
@@ -419,7 +583,21 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
 
 .about-content h1 {
   font-size: 1.6rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.5px;
+}
+
+.about-content .lead {
+  color: var(--text-dim);
+  font-size: 0.75rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
   margin-bottom: 2rem;
+}
+
+.about-content .lead::before {
+  content: '> ';
+  color: var(--green);
 }
 
 .about-content p {
@@ -427,6 +605,72 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
   font-size: 0.85rem;
   margin-bottom: 1rem;
   max-width: 580px;
+  line-height: 1.8;
+}
+
+.about-content .sub-h {
+  color: var(--green);
+  margin-top: 2.8rem;
+  margin-bottom: 1rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.about-content .sub-h::before {
+  content: '';
+  width: 14px;
+  height: 1px;
+  background: var(--green);
+}
+
+.about-content ul.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.about-content ul.list li {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  padding: 0.4rem 0 0.4rem 1.3rem;
+  position: relative;
+  border-bottom: 1px dashed var(--border);
+}
+
+.about-content ul.list li:last-child { border-bottom: 0; }
+
+.about-content ul.list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  color: var(--green);
+  font-size: 0.7rem;
+}
+
+.about-content .contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+}
+
+.about-content .contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.about-content .contact .key {
+  color: var(--text-ghost);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  min-width: 70px;
+  display: inline-block;
 }
 
 /* ── Back link ── */
@@ -452,6 +696,9 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
   .hero-meta { gap: 1.5rem; flex-wrap: wrap; }
   .post-card { padding: 1.5rem; }
   nav { gap: 1.2rem; }
+  .footer-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .post-nav { grid-template-columns: 1fr; }
+  .post-nav .next { text-align: left; }
 }
 </style>
 </head>
@@ -476,7 +723,28 @@ nav a:hover, nav a.active { color: var(--green); text-shadow: 0 0 8px rgba(0,255
 
 <footer class="site-footer">
   <div class="container">
-    {{ site.title }} — {{ site.description }} — {{ site.author }}
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>// {{ site.title }}</h4>
+        <div class="build-line">node <span class="val">{{ site.author }}</span></div>
+        <div class="build-line">posts <span class="val">{{ site.posts | size }}</span></div>
+        <div class="build-line">build <span class="val">{{ site.time | date: "%Y.%m.%d" }}</span></div>
+      </div>
+      <div class="footer-col">
+        <h4>// navigate</h4>
+        <a href="{{ '/' | relative_url }}">~/posts</a>
+        <a href="{{ '/about' | relative_url }}">~/about</a>
+      </div>
+      <div class="footer-col">
+        <h4>// links</h4>
+        <a href="https://github.com/gjinikr" target="_blank" rel="noopener">github</a>
+        <a href="https://www.linkedin.com/in/gjin-krasniqi-b46091206/" target="_blank" rel="noopener">linkedin</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span class="sig"><span class="prompt">$</span> echo "{{ site.description }}"</span>
+      <span>&copy; {{ site.time | date: "%Y" }} {{ site.author }}</span>
+    </div>
   </div>
 </footer>
 
